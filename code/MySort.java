@@ -1,9 +1,11 @@
 package org.example;
 
 import javax.swing.plaf.synth.SynthTextAreaUI;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MySort {
@@ -91,9 +93,7 @@ public class MySort {
             boolean swapFlag = false;
             for (int i = 0; i < array.length - 1 - k; ++i) {
                 if (comparator.compare(array[i], array[i + 1]) > 0) {
-                    Object tmp = array[i];
-                    array[i] = array[i + 1];
-                    array[i + 1] = tmp;
+                    swap(array, i, i+1);
                     swapFlag = true;
                 }
             }
@@ -116,12 +116,177 @@ public class MySort {
                 }
             }
             if (minIndex != i) {
-                Object tmp = array[i];
-                array[i] = array[minIndex];
-                array[minIndex] = tmp;
+                swap(array,i, minIndex);
             }
         }
     }
+    static private void swap(Object[] array, int i, int j)
+    {
+        Object tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+    static public void mergeSort(Object[] array, Comparator<Object> comparator)
+    {
+        BlockingQueue< ArrayList<Object> > subArrays = new LinkedBlockingQueue< ArrayList<Object> >();
+
+        // 长度为n的数组，被认为是n个已经排好序的子数组
+        for (int i = 0; i < array.length; ++i)
+        {
+            ArrayList<Object> subArr = new ArrayList<Object>(); //一个排好序的子数组
+            subArr.add(array[i]);
+            subArrays.add(subArr);
+        }
+        while (subArrays.size() > 1)
+        {
+            // 拿出两个来归并
+            ArrayList<Object> arr1 = subArrays.remove();
+            ArrayList<Object> arr2 = subArrays.remove();
+            ArrayList<Object> subArr = new ArrayList<Object>(); //结果子数组
+
+            int i, j;
+            for (i = 0, j = 0; i < arr1.size() && j < arr2.size(); )
+            {
+                int cmp = comparator.compare(arr1.get(i), arr2.get(j));
+                if (cmp < 0)
+                {
+                    subArr.add(arr1.get(i));
+                    i++;
+                }
+                else if (cmp == 0)
+                {
+                    subArr.add(arr1.get(i));
+                    subArr.add(arr2.get(j));
+                    i++;
+                    j++;
+                }
+                else
+                {
+                    subArr.add(arr2.get(j));
+                    j++;
+                }
+            }
+            for (; i < arr1.size(); i++) {
+                subArr.add(arr1.get(i));
+            }
+
+            for (; j < arr2.size(); j++) {
+                subArr.add(arr2.get(j));
+            }
+
+            subArrays.add(subArr);
+
+        }
+        ArrayList<Object> subArr = subArrays.remove();
+        for (int i = 0; i < subArr.size();++i)
+        {
+            array[i] = subArr.get(i);
+        }
+
+    }
+
+    static  public void quickSort(Object[] array, Comparator<Object> comparator) throws Exception
+    {
+        BlockingQueue< ArrayList<Integer> > jobs = new LinkedBlockingQueue< ArrayList<Integer> >();
+        ArrayList<Integer> job = new ArrayList<Integer>();
+        job.add(Integer.valueOf(0));
+        job.add(Integer.valueOf(array.length-1));
+        jobs.add(job);
+        while (!jobs.isEmpty())
+        {
+            job = jobs.remove();
+            int start = job.get(0).intValue();
+            int end = job.get(1).intValue();
+            if (end <= start) {continue;}
+            Object pivot = array[end]; // end这个位置可以认为空出来了
+            int left = start;
+            int right = end;
+
+            while (left < right)
+            {
+                while (comparator.compare(array[left], pivot) <= 0 && left < right)
+                {
+                    left++;
+                }
+                // left的值当前大于pivot, 交换。交换后left指示的位置可以认为空出来了。
+                swap(array, left, right);
+
+                while (comparator.compare(array[right], pivot) >= 0 && left < right)
+                {
+                    right--;
+                }
+                // right的值当前大于pivot，交换。交换后right指示的位置可以认为空出来了
+                swap(array, left, right);
+            }
+            if (left != right) throw new Exception("quickSort Error!");
+            array[left] = pivot;
+
+            if (left-1 > start)
+            {
+                job = new ArrayList<Integer>();
+                job.add(Integer.valueOf(start));
+                job.add(Integer.valueOf(left-1));
+                jobs.add(job);
+
+            }
+            if (end > left+1)
+            {
+                job = new ArrayList<Integer>();
+                job.add(Integer.valueOf(left+1));
+                job.add(Integer.valueOf(end));
+                jobs.add(job);
+
+            }
+
+        }
+
+    }
+    static public void radixSort(Object[] array, Comparator<Object> comparator) // 我这里只能排序正整数
+    {
+        final int RNUM = 10;
+        Object[] buckets = new Object[RNUM]; //基数为10
+        for (int i = 0; i < RNUM; i++)
+        {
+            buckets[i] = new ArrayList<Object>();
+        }
+        boolean needMoreRound = true;
+        int round = 0;
+        int maxValue = 10;
+        while (needMoreRound)
+        {
+            needMoreRound = false;
+
+            for (int i = 0; i < array.length; ++i)
+            {
+                if (comparator.compare(array[i], Integer.valueOf(maxValue)) >= 0)
+                {
+                    needMoreRound = true;
+                }
+
+                int subscript = ((Integer)array[i]).intValue();
+                for (int j = 0; j < round; ++j)
+                {
+                    subscript = subscript / 10;
+                }
+                subscript = subscript % 10;
+
+                ((ArrayList<Object>)buckets[subscript]).add(array[i]);
+            }
+            int index = 0;
+            for (int i = 0; i < RNUM; ++i)
+            {
+                ArrayList<Object> bucket = (ArrayList<Object>)buckets[i];
+                for (int j = 0; j < bucket.size(); ++j)
+                {
+                    array[index++] = bucket.get(j);
+                }
+                bucket.clear();
+            }
+            round++;
+            maxValue = maxValue * 10;
+        }
+    }
+
     static public void heapSort(Object[] array, Comparator<Object> comparator)
     {
         if (array.length < 2)
@@ -148,9 +313,7 @@ public class MySort {
                 }
                 if (bigChild != -1 && comparator.compare(array[parent], array[bigChild]) < 0)
                 {
-                    Object tmp = array[bigChild];
-                    array[bigChild] = array[parent];
-                    array[parent] = tmp;
+                    swap(array, bigChild, parent);
 
                     parent = bigChild; // 继续调整
                 }
@@ -167,9 +330,7 @@ public class MySort {
         for (int i = array.length-1; i > 0; i--)
         {
             {
-                Object tmp = array[i];
-                array[i] = array[0];
-                array[0] = tmp;
+                swap(array, i, 0);
             }
             int heapSize = i;
 
@@ -190,9 +351,7 @@ public class MySort {
                     }
                 }
                 if (bigChild != -1 && comparator.compare(array[parent], array[bigChild]) < 0) {
-                    Object tmp = array[bigChild];
-                    array[bigChild] = array[parent];
-                    array[parent] = tmp;
+                    swap(array, bigChild, parent);
 
                     parent = bigChild;// 继续往下修复
                 }
@@ -204,7 +363,6 @@ public class MySort {
             }
 
         }
-
 
     }
 
@@ -222,7 +380,7 @@ public class MySort {
         };
 
 
-        final int arrlen = 70;
+        final int arrlen = 51;
         final int round = 20;
         Random r = new Random();
         Integer[] array = new Integer[arrlen];
@@ -233,13 +391,14 @@ public class MySort {
                 if (i == 0)
                 {
                     array[j] = j;
+                   // array[j] = Integer.valueOf(r.nextInt() % 10);
                 }
                 else if (i == 1)
                 {
                     array[j] = j / 2;
                 }
                 else {
-                    array[j] = Integer.valueOf(r.nextInt() % 1000);
+                    array[j] = Integer.valueOf(Math.abs(r.nextInt()) % 1000);
                 }
             }
 
@@ -256,6 +415,15 @@ public class MySort {
                 case 4:
                     heapSort(array, new MyComparator());
                     break;
+                case 5:
+                    quickSort(array, new MyComparator());
+                    break;
+                case 6:
+                    mergeSort(array, new MyComparator());
+                    break;
+                case 7:
+                    radixSort(array, new MyComparator());
+                    break;
                 default:
                     bubbleSort(array, new MyComparator());
                     break;
@@ -267,8 +435,10 @@ public class MySort {
 
                 if (array[j] > array[j+1])
                 {
-                    throw new Exception("error!");
+                    throw new Exception("error!"+array[j] +" "+ array[j+1]);
                 }
+
+
 
             }
             if (i < 10) {System.out.println(" "+array[arrlen-1]);}
