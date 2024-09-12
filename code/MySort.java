@@ -365,6 +365,25 @@ public class MySort {
         }
 
     }
+    //希尔排序真他妈的不好理解，我写不出来也看不明白，下面的代码是chatGPT写的。
+    public static void shellSort(Object[] array, Comparator<Object> comparator) {
+        int n = array.length;
+        // 选择初始增量（一般选择 n/2）
+        for (int gap = n / 2; gap > 0; gap /= 2) {
+            // 使用增量对数组进行排序
+            for (int i = gap; i < n; i++) {
+                // 记录当前元素
+                Object temp = array[i];
+                int j = i;
+                // 插入排序的过程
+                while (j >= gap && comparator.compare(array[j - gap], temp) > 0) {
+                    array[j] = array[j - gap];
+                    j -= gap;
+                }
+                array[j] = temp;
+            }
+        }
+    }
 
 
     public static void testSort(int kind) throws Exception
@@ -423,6 +442,9 @@ public class MySort {
                     break;
                 case 7:
                     radixSort(array, new MyComparator());
+                    break;
+                case 8:
+                    shellSort(array, new MyComparator());
                     break;
                 default:
                     bubbleSort(array, new MyComparator());
