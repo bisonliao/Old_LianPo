@@ -1,10 +1,7 @@
 package org.example;
 
 import javax.swing.plaf.synth.SynthTextAreaUI;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -241,6 +238,110 @@ public class MySort {
         }
 
     }
+    static class WinTreeNode
+    {
+       public Object data;
+       public int from;
+    };
+    static private void voteInHeap(int parent, WinTreeNode[] heap,Comparator<Object> comparator )
+    {
+        int left = parent * 2 + 1;
+        int right = parent * 2 + 2;
+        if (heap[left] == null || heap[right] == null) {
+            if (heap[left] == null)  // null是个哨兵，认为这个元素无穷大，来自于已经到头了的子数组
+            {
+                heap[parent] = heap[right];
+            } else if (heap[right] == null) {
+                heap[parent] = heap[left];
+            }
+        } else {
+            int littleChild = left; // 左右孩子中较小的那个
+            if (comparator.compare(heap[left].data, heap[right].data) > 0) {
+                littleChild = right;
+            }
+            heap[parent] = heap[littleChild];
+        }
+    }
+    // 模拟外部排序中的k路归并，使用我自己理解的一种败者树，类似最小堆进行归并
+    static public void kMergeSort(Object[] array, Comparator<Object> comparator) throws Exception
+    {
+        //if (array.length < 100) {return;}
+
+        final int k = 4; // k要选择为2的幂
+        int subArrayLen = array.length / k;
+        if ( (array.length % k) != 0) {subArrayLen++;}
+
+        // split array into k sub arrays and sort them
+        List<Object[]> subArrayArray = new ArrayList<Object[]>();
+        int count = 0;
+        for (int i = 0; i < k; ++i)
+        {
+            int tmpLen = subArrayLen;
+            if (i+1 == k) {tmpLen = array.length - (k-1)*subArrayLen;}
+
+            Object[] oneSubArray = new Object[tmpLen];
+            for (int j = 0; j < tmpLen; ++j)
+            {
+                oneSubArray[j] = array[count++];
+            }
+            insertSort(oneSubArray, comparator);
+            subArrayArray.add(oneSubArray);
+        }
+
+
+        //先装填k个叶子节点，并初始化最小堆
+        final int heapSize = k + k -1;
+        WinTreeNode[] heap = new WinTreeNode[heapSize];
+        int [] subArrayIndex = new int[k];
+        for (int i = 0; i < k; ++i)
+        {
+            subArrayIndex[i] = 0;
+            WinTreeNode node = new WinTreeNode();
+            node.data = subArrayArray.get(i)[ subArrayIndex[i]++ ];
+            node.from = i;
+            heap[heapSize-k + i] = node;
+        }
+        // 初始化的方法就是：从下标最大的一个父亲开始，逐步减一，检查所有父亲及其左右孩子，是否符合最大堆规则
+        for (int i = heap.length - k - 1; i >= 0; i--)
+        {
+            voteInHeap(i, heap, comparator);
+        }
+        // 一个一个元素开始归并
+        //太复杂： 一方面要吧非叶子节点中每个元素来自哪个子数组要记住，一方面还要考虑个别子数组到头了该怎么处理，例如设置一个无穷大的哨兵？
+        for (int i = 0; i < array.length; ++i)
+        {
+            array[i] = heap[0].data;
+
+            int from = heap[0].from;
+            if (subArrayIndex[from] < subArrayArray.get(from).length) // more data to reduce
+            {
+                WinTreeNode node = new WinTreeNode();
+                node.data = subArrayArray.get(from)[ subArrayIndex[from]++ ];
+                node.from = from;
+                heap[heap.length-k+from] = node;
+            }
+            else // no data to reduce in sub array #from
+            {
+                heap[heap.length-k+from] = null;
+            }
+
+            int parent = ((heap.length-k+from)-1)/2;
+            while (parent >= 0) {
+                voteInHeap(parent, heap, comparator);
+                if (parent > 0) {
+                    parent = (parent - 1) / 2; // continue to check
+                }
+                else
+                {
+                    parent = -1;
+                }
+
+            }
+
+        }
+
+
+    }
     static public void radixSort(Object[] array, Comparator<Object> comparator) // 我这里只能排序正整数
     {
         final int RNUM = 10;
@@ -399,7 +500,7 @@ public class MySort {
         };
 
 
-        final int arrlen = 51;
+        final int arrlen = 27;
         final int round = 20;
         Random r = new Random();
         Integer[] array = new Integer[arrlen];
@@ -410,7 +511,7 @@ public class MySort {
                 if (i == 0)
                 {
                     array[j] = j;
-                   // array[j] = Integer.valueOf(r.nextInt() % 10);
+                    array[j] = Integer.valueOf(r.nextInt() % 10);
                 }
                 else if (i == 1)
                 {
@@ -445,6 +546,9 @@ public class MySort {
                     break;
                 case 8:
                     shellSort(array, new MyComparator());
+                    break;
+                case 9:
+                    kMergeSort(array, new MyComparator());
                     break;
                 default:
                     bubbleSort(array, new MyComparator());
