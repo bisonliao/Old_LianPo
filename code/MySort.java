@@ -466,6 +466,49 @@ public class MySort {
         }
 
     }
+    private static void insertSort4shell(Object[] array, Comparator<Object> comparator, int start, int gap)
+    {
+        //从第二个元素开始，每一个元素，都拿出来和前面的已经排好序的部分数组相比，找到适合插入的位置
+        for (int i = gap+start; i < array.length; i += gap)
+        {
+            int j;
+
+            int targetPosition;
+            for (j = i - gap; j >= start; j -= gap) {
+                if (comparator.compare(array[i], array[j]) >= 0) {
+                    break;
+                }
+            }
+            if (j < start) // array[i]比前面任何数都小，那么它将被插入到位置0
+            {
+                targetPosition = start;
+            } else {
+                targetPosition = j + gap;//否则他被插入到j的下一个元素
+            }
+
+            // 挨个往后移动一个位置
+            Object tmp = array[i];
+            for (int k = i; k > targetPosition; k-= gap)
+            {
+                array[k] = array[k-gap];
+            }
+            array[targetPosition] = tmp;
+        }
+    }
+
+    //tmd我还是要自己实现一下希尔排序
+    public static void shellSortByBison(Object[] array, Comparator<Object> comparator)
+    {
+        int n = array.length;
+        for (int gap = n / 2; gap > 0; gap = gap / 2)
+        {
+            for (int i = 0; i < gap; ++i) // gap确定后，数组就被分成了gap个子数组，对每个子数组做插入排序
+            {
+                insertSort4shell(array, comparator, i, gap);
+            }
+        }
+    }
+
     //希尔排序真他妈的不好理解，我写不出来也看不明白，下面的代码是chatGPT写的。
     public static void shellSort(Object[] array, Comparator<Object> comparator) {
         int n = array.length;
@@ -545,7 +588,7 @@ public class MySort {
                     radixSort(array, new MyComparator());
                     break;
                 case 8:
-                    shellSort(array, new MyComparator());
+                    shellSortByBison(array, new MyComparator());
                     break;
                 case 9:
                     kMergeSort(array, new MyComparator());
