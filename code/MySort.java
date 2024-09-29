@@ -212,7 +212,7 @@ public class MySort {
                 {
                     right--;
                 }
-                // right的值当前大于pivot，交换。交换后right指示的位置可以认为空出来了
+                // right的值当前小于pivot，交换。交换后right指示的位置可以认为空出来了
                 swap(array, left, right);
             }
             if (left != right) throw new Exception("quickSort Error!");
