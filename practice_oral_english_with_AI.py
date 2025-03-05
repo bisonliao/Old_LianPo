@@ -15,6 +15,14 @@ from scipy.io.wavfile import write, read
 import os
 from openai import OpenAI
 
+'''
+# install dependency
+pip3 install openai
+pip install --upgrade tencentcloud-sdk-python-tts
+pip install --upgrade tencentcloud-sdk-python-asr
+pip install --upgrade tencentcloud-sdk-python-common
+'''
+
 
 # set the proper key to use tencent cloud ASR and TTS
 SecretId = "AKIDjTZq"
