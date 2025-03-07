@@ -35,12 +35,12 @@ int graph_prim(graph_t * g, graph_t * t)
                 return -1;
             }
             GList * currentE = ((vertex_t *)(position->data))->edge_list;
-            while (currentE != NULL) // 顶点里的每一条边
+            while (currentE != NULL) // 顶点发出的每一条边
             {
                 edge_t * pe = (edge_t*)currentE->data;
                 if (visited_vertex.find(pe->to) == visited_vertex.end()) //终止顶点 没有出现在t这个图里
                 {
-                    if (pe->weight < edgeWithMinWeight.weight) // 且权重是最小的
+                    if (pe->weight <= edgeWithMinWeight.weight) // 且权重是最小的
                     {
                         edgeWithMinWeight = *pe;
                         findNewVertex = true;
@@ -56,7 +56,6 @@ int graph_prim(graph_t * g, graph_t * t)
         {
             graph_add_edge(t, &edgeWithMinWeight);
             visited_vertex.insert(edgeWithMinWeight.to);
-            printf("add new edge %d-%d->%d\n", edgeWithMinWeight.from, edgeWithMinWeight.weight, edgeWithMinWeight.to);
         }
         else
         {

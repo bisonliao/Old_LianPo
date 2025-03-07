@@ -27,14 +27,14 @@ typedef struct
 typedef struct
 {
     vertex_id_t vertex_id;
-    GList * edge_list;
+    GList * edge_list; //原谅我设计成这个鸟样子，我一开始想用纯c的，后来受不了了才改用stl
     
 } vertex_t; //定义一个顶点
  
 typedef struct 
 {
     bool is_directed;
-    GList * vertex_list;
+    GList * vertex_list;//原谅我设计成这个鸟样子，我一开始想用纯c的，后来受不了了才改用stl
 } graph_t; //定义一个图
 
 typedef std::list<vertex_id_t> path_t; //定义一条路径，由经过的顶点构成的列表
@@ -53,7 +53,12 @@ int graph_dfscan(graph_t *g, vertex_id_t * start, std::list<vertex_id_t> & topo_
         std::list<vertex_id_t> & result1, std::list<edge_t> & result2);
 
 //最小生成树
-int graph_prim(graph_t * g, graph_t * t);
+int graph_prim(graph_t * g, graph_t * tree);
+int graph_kruskal(graph_t *g, graph_t*tree);
+
+//最短路径。路径保存在paths里，距离值保存在distance里，他们都是以目标顶点为key的，表示start到目标顶点的最短路径和最短距离
+int graph_dijkstra(graph_t * g, const vertex_id_t &start, std::map<vertex_id_t, path_t> & paths, 
+    std::map<vertex_id_t, edge_weight_t> & distance);
 
 //一些辅助函数，开发者不用关心
 gint  compare_vertex(gconstpointer  a,  gconstpointer  b);
