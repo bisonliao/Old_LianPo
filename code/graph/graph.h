@@ -60,6 +60,15 @@ int graph_kruskal(graph_t *g, graph_t*tree);
 int graph_dijkstra(graph_t * g, const vertex_id_t &start, std::map<vertex_id_t, path_t> & paths, 
     std::map<vertex_id_t, edge_weight_t> & distance);
 
+// floyd算法计算两个顶点之间最小路径的时候，用下面的结构体作为key
+typedef struct{
+    vertex_id_t start; //起始顶点
+    vertex_id_t end; // 结束顶点
+}floyd_key_t;
+
+int graph_floyd(graph_t * g, std::map<floyd_key_t, path_t> & paths, 
+    std::map<floyd_key_t, edge_weight_t> & distance);
+
 //一些辅助函数，开发者不用关心
 gint  compare_vertex(gconstpointer  a,  gconstpointer  b);
 gint  compare_edge(gconstpointer  a,  gconstpointer  b);
