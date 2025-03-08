@@ -103,3 +103,89 @@ int graph_dfscan(graph_t *g, vertex_id_t * start, std::list<vertex_id_t> & topo_
     return 0;
 
 }
+
+int graph_kahn(graph_t * g, std::list<vertex_id_t> & topo_seq)
+{
+    if (g== NULL){return -1;}
+    if (!g->is_directed) {return 1;}
+    graph_t tmp1, tmp2; //这两个图用来倒腾，不断的拷贝，每次拷贝会删掉一个入度为0的顶点和它相连的边
+    graph_init(&tmp1, g->is_directed);
+    graph_init(&tmp2, g->is_directed);
+    graph_t * from = &tmp1;
+    graph_t * to = &tmp2;
+
+    if (graph_copy(g, &tmp1))
+    {
+        fprintf(stderr, "graph_copy() failed!\n");
+        return -1;
+    }
+    
+    
+    while (1)
+    {
+        std::set<vertex_id_t> toRemove;
+        // 从from中找到 入度为0 的顶点，放到toRemove中
+        std::map<vertex_id_t, int> indegree;
+        for (GList* v1 = from->vertex_list; v1 != NULL; v1 = v1->next) 
+        {
+            vertex_t * pv = (vertex_t*)v1->data;
+            indegree[pv->vertex_id] = 0;
+        }
+        
+        for (GList* v1 = from->vertex_list; v1 != NULL; v1 = v1->next) 
+        {
+            vertex_t * pv = (vertex_t*)v1->data;
+            for (GList * v2 = pv->edge_list; v2 != NULL; v2 = v2->next)//遍历该顶点发出的每一条边
+            {
+                edge_t * pe = (edge_t*)v2->data;
+                indegree[pe->to] = indegree[pe->to] + 1;
+            }
+        }
+       
+        for (std::map<vertex_id_t, int>::const_iterator it = indegree.begin();
+            it != indegree.end(); ++it)
+        {
+            if (it->second == 0)
+            {
+                toRemove.insert(it->first);
+                topo_seq.push_back(it->first);
+                printf("find a vertex with 0 in degree:%d\n", it->first);
+            }
+        }
+        
+        // 发现没有入度为0 的点了
+        if (toRemove.size() < 1)
+        {
+            if (g_list_length(from->vertex_list) > 0) //但这时候图中还有节点
+            {
+                graph_free(&tmp1);
+                graph_free(&tmp2);
+                return 1;
+            }
+            else
+            {
+                graph_free(&tmp1);
+                graph_free(&tmp2);
+                return 0;
+            }
+            
+        }
+        
+        
+        if (graph_copy(from, to, &toRemove))
+        {
+            fprintf(stderr, "fatal error! graph_copy() failed!\n");
+            return -1;
+        }
+        
+        // swap from and to
+        graph_t * tmp = to;
+        to = from;
+        from = tmp;
+    }
+
+   
+    graph_free(&tmp1);
+    graph_free(&tmp2);
+    return 0;
+}

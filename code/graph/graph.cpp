@@ -173,4 +173,28 @@ int graph_free(graph_t * g)
     return 0;
 }
 
+int graph_copy(graph_t * from, graph_t *to, std::set<vertex_id_t> * except)
+{
+    if ( from == NULL || to == NULL) {return 0;}
+    graph_free(to);
+    to->is_directed = from->is_directed;
+    //遍历每一个顶点，
+    for (GList* v1 = from->vertex_list; v1 != NULL; v1 = v1->next) 
+    {
+        vertex_t * pv = (vertex_t*)v1->data;
+        if (except &&  except->find(pv->vertex_id) != except->end()) { continue;}
+        graph_add_vertex(to, pv->vertex_id);
+        for (GList * v2 = pv->edge_list; v2 != NULL; v2 = v2->next)//遍历该顶点发出的每一条边
+        {
+            edge_t * pe = (edge_t*)v2->data;
+            if (except && 
+                (except->find(pe->from) != except->end() || except->find(pe->to) != except->end())) {continue;}
+            if (graph_add_edge(to, pe))
+            {
+                return -1;
+            }
+        }
 
+    }
+    return 0;
+}

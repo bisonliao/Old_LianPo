@@ -44,6 +44,9 @@ int graph_add_edge(graph_t * g, const edge_t * e);
 int graph_add_vertex(graph_t * g, vertex_id_t id);
 int graph_free(graph_t * g);
 
+//图拷贝，从from拷贝到to。可以指明哪个顶点和与它有连接的边不要拷贝到to里。
+int graph_copy(graph_t * from, graph_t *to, std::set<vertex_id_t> * except = NULL);
+
 //广度优先搜索，得到从start顶点开始的最短路径，保存在returned_path里，依次搜索到的顶点和边保存在result1 result2里
 int graph_shortest_path_by_bfs(graph_t * g, vertex_id_t*start, std::map<vertex_id_t, path_t> & returned_path,
     std::list<vertex_id_t> & result1, std::list<edge_t> & result2 );
@@ -63,11 +66,18 @@ int graph_dijkstra(graph_t * g, const vertex_id_t &start, std::map<vertex_id_t, 
 // floyd算法计算两个顶点之间最小路径的时候，用下面的结构体作为key
 typedef struct{
     vertex_id_t start; //起始顶点
-    vertex_id_t end; // 结束顶点
+    vertex_id_t end; // 结束顶点 
 }floyd_key_t;
 
+bool operator<(const floyd_key_t& a, const floyd_key_t& b) ;
+
+//floyd算法求两个顶点之间的最小路径和最短距离，分别保存在paths和distance中，
+// 他们都是以floyd_key_t为key的map。如果两个顶点不可达，就不会在这两个map中存在相关项
 int graph_floyd(graph_t * g, std::map<floyd_key_t, path_t> & paths, 
     std::map<floyd_key_t, edge_weight_t> & distance);
+
+// kahn算法求解有向图的拓扑排序， 1表示没有解，0表示成功，-1表示出错
+int graph_kahn(graph_t * g, std::list<vertex_id_t> & topo_seq);
 
 //一些辅助函数，开发者不用关心
 gint  compare_vertex(gconstpointer  a,  gconstpointer  b);

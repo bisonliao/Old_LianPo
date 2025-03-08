@@ -96,6 +96,14 @@ int graph_dijkstra(graph_t * g, const vertex_id_t &start, std::map<vertex_id_t, 
     return 0;
 }
 
+// 重载 < 运算符
+bool operator<(const floyd_key_t& a, const floyd_key_t& b) {
+    if (a.start != b.start) {
+        return a.start < b.start;
+    }
+    return a.end < b.end;
+}
+
 int graph_floyd(graph_t * g, std::map<floyd_key_t, path_t> & paths, 
     std::map<floyd_key_t, edge_weight_t> & distance)
 {
@@ -140,6 +148,7 @@ int graph_floyd(graph_t * g, std::map<floyd_key_t, path_t> & paths,
             {
                 vertex_t* end = (vertex_t*)v3->data;
                 if (end->vertex_id == bridge->vertex_id) {continue;}
+                if (end->vertex_id == start->vertex_id) {continue;}
                 floyd_key_t key2, key3;
                 key2.start = bridge->vertex_id;
                 key2.end = end->vertex_id;
