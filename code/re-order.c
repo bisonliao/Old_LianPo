@@ -28,14 +28,16 @@ int reverse(Node ** h)
 int reorder(const Node * head)
 {
         if (head == NULL) return -1;
+        //统计长度
         int length = 0;
         Node *p = head;
-        while (p->next != NULL)
+        while (p->next != NULL) 
         {
                 length++;
                 p = p->next;
         }
         if (length <= 2) {return 0;}
+        //把链表分成两段， 前半段和后半段
         Node * secondHdr = head;
         Node * nodeBeforeSecondHdr = NULL;
         for (int i = 0; i <= length / 2; ++i)
@@ -49,10 +51,12 @@ int reorder(const Node * head)
                 secondHdr = secondHdr->next;
         }
         nodeBeforeSecondHdr->next = NULL;
+        //把后半段逆向
         printf("%d: %d\n", __LINE__, secondHdr->data);
         reverse(&secondHdr);
         printf("%d: %d\n", __LINE__, secondHdr->data);
-
+        
+        //交替着把两条链表拼起来
         p = head->next;
         while (secondHdr != NULL)
         {

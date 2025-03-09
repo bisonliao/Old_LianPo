@@ -181,7 +181,7 @@ public class MySort {
         }
 
     }
-
+    //这个版本真不好懂， 下面那个quickSort2应该好懂一点？
     static  public void quickSort(Object[] array, Comparator<Object> comparator) throws Exception
     {
         BlockingQueue< ArrayList<Integer> > jobs = new LinkedBlockingQueue< ArrayList<Integer> >();
@@ -237,6 +237,55 @@ public class MySort {
 
         }
 
+    }
+    // 划分函数：将数组划分为两部分，并返回 pivot 的最终位置
+    static private  int partition(Object[] arr, int low, int high, Comparator<Object> comparator) {
+        // 选择最右边的元素作为 pivot
+        Object pivot = arr[high];
+        int i = low - 1; // i 是小于 pivot 的元素的边界
+
+        for (int j = low; j < high; j++) {
+            // 如果当前元素小于 pivot
+            if (comparator.compare(arr[j], pivot) < 0) {
+                i++; // 扩展小于 pivot 的区域
+                swap(arr, i, j); // 将当前元素交换到小于 pivot 的区域
+            }
+        }
+
+        // 将 pivot 放到正确的位置
+        swap(arr, i + 1, high);
+        return i + 1; // 返回 pivot 的最终位置
+    }
+    //更好理解一点？
+    static public void quickSort2(Object[] array, Comparator<Object> comparator) throws Exception
+    {
+        if (array == null || array.length <= 1)
+        {
+            return;
+        }
+        // 使用栈来模拟递归过程
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{0, array.length - 1}); // 将整个数组的范围压入栈
+
+        while (!stack.isEmpty()) {
+            // 弹出栈顶范围
+            int[] range = stack.pop();
+            int low = range[0];
+            int high = range[1];
+
+            // 如果范围内的元素少于两个，无需排序
+            if (low >= high) {
+                continue;
+            }
+
+            // 对当前范围进行划分，找到 pivot 的最终位置
+            int pivotIndex = partition(array, low, high, comparator);
+
+            // 将划分后的左右子数组范围压入栈
+            // 注意：先压入右边的范围，再压入左边的范围
+            stack.push(new int[]{pivotIndex + 1, high}); // 右边子数组
+            stack.push(new int[]{low, pivotIndex - 1});  // 左边子数组
+        }
     }
     static class WinTreeNode
     {
