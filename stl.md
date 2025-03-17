@@ -122,3 +122,226 @@ stack特殊一点，没有后面三个，只有size()和empty()
   }
   ```
 
+#### 7.  string
+
+ `std::string` 的一些常用成员函数及其参数原型和简要说明：
+
+##### 1. 构造函数
+- **默认构造函数**
+  ```cpp
+  std::string();
+  ```
+  创建一个空字符串。
+
+- **从 C 风格字符串初始化**
+  ```cpp
+  std::string(const char* s);
+  ```
+  从 C 风格字符串初始化。
+
+- **拷贝构造函数**
+  ```cpp
+  std::string(const std::string& str);
+  ```
+  从另一个字符串对象拷贝初始化。
+
+- **从子字符串初始化**
+  ```cpp
+  std::string(const char* s, size_t n);
+  ```
+  从 C 风格字符串的前 `n` 个字符初始化。
+
+- **从子字符串初始化**
+  ```cpp
+  std::string(const std::string& str, size_t pos, size_t n = npos);
+  ```
+  从另一个字符串的子字符串初始化。
+
+- **重复字符初始化**
+  ```cpp
+  std::string(size_t n, char c);
+  ```
+  创建一个包含 `n` 个字符 `c` 的字符串。
+
+##### 2. 赋值操作
+- **赋值操作符**
+  ```cpp
+  std::string& operator=(const std::string& str);
+  ```
+  将另一个字符串对象赋值给当前对象。
+
+- **通用赋值函数**
+  ```cpp
+  std::string& assign(const char* s);
+  std::string& assign(const char* s, size_t n);
+  std::string& assign(const std::string& str);
+  std::string& assign(const std::string& str, size_t pos, size_t n);
+  std::string& assign(size_t n, char c);
+  ```
+  更通用的赋值函数，可以指定赋值的内容和范围。
+
+##### 3. 字符访问
+- **下标操作符**
+  ```cpp
+  char& operator[](size_t pos);
+  const char& operator[](size_t pos) const;
+  ```
+  访问指定位置的字符（可读写）。
+
+- **范围检查访问**
+  ```cpp
+  char& at(size_t pos);
+  const char& at(size_t pos) const;
+  ```
+  访问指定位置的字符，范围检查（抛出 `std::out_of_range` 异常）。
+
+##### 4. 字符串大小和容量
+- **获取字符串长度**
+  ```cpp
+  size_t size() const;
+  size_t length() const;
+  ```
+  返回字符串的长度。
+
+- **获取当前分配的容量**
+  ```cpp
+  size_t capacity() const;
+  ```
+  返回当前分配的容量。
+
+- **检查字符串是否为空**
+  ```cpp
+  bool empty() const;
+  ```
+  检查字符串是否为空。
+
+##### 5. 字符串修改
+- **清空字符串内容**
+  ```cpp
+  void clear();
+  ```
+  清空字符串内容。
+
+- **调整字符串大小**
+  ```cpp
+  void resize(size_t n, char c = char());
+  ```
+  调整字符串大小，不足部分用 `c` 填充。
+
+- **在字符串末尾添加一个字符**
+  ```cpp
+  void push_back(char c);
+  ```
+  在字符串末尾添加一个字符。
+
+- **移除字符串末尾的一个字符**
+
+  ```cpp
+  void pop_back();
+  ```
+  移除字符串末尾的一个字符。
+
+  **在字符串前端插入字符**
+
+  ```cpp
+  std::string s = "World";
+  s.insert(0, "Hello ");
+  std::cout << s << std::endl; // 输出 "Hello World"
+  ```
+
+##### 6. 字符串拼接
+- **拼接字符串**
+  ```cpp
+  std::string& operator+=(const std::string& str);
+  std::string& operator+=(const char* s);
+  std::string& operator+=(char c);
+  
+  std::string operator+(const std::string& lhs, const std::string& rhs);
+std::string operator+(const std::string& lhs, const char* rhs);
+  std::string operator+(const std::string& lhs, char rhs);
+  std::string operator+(char lhs, const std::string& rhs);
+  ```
+  拼接字符串。
+  
+- **通用拼接函数**
+  ```cpp
+  std::string& append(const char* s);
+  std::string& append(const char* s, size_t n);
+  std::string& append(const std::string& str);
+  std::string& append(const std::string& str, size_t pos, size_t n);
+  std::string& append(size_t n, char c);
+  ```
+  更通用的拼接函数。
+
+##### 7. 子字符串操作
+- **获取子字符串**
+  ```cpp
+  std::string substr(size_t pos = 0, size_t n = npos) const;
+  ```
+  获取子字符串。pos：子字符串的起始位置（从0开始计数）；npos: 要提取的子字符串的长度。如果省略此参数，默认提取从起始位置到字符串末尾的所有字符。
+
+##### 8. 查找和替换
+- **查找子字符串的位置**
+  
+  ```cpp
+  size_t find(const std::string& str, size_t pos = 0) const;
+  size_t find(const char* s, size_t pos = 0) const;
+  size_t find(char c, size_t pos = 0) const;
+  ```
+查找子字符串的位置。pos：子字符串查找的起始位置（从0开始计数）
+  
+- **从后向前查找子字符串的位置**
+  
+  ```cpp
+  size_t rfind(const std::string& str, size_t pos = npos) const;
+  size_t rfind(const char* s, size_t pos = npos) const;
+  size_t rfind(char c, size_t pos = npos) const;
+  ```
+从后向前查找子字符串的位置。
+  
+- **替换子字符串**
+  ```cpp
+  std::string& replace(size_t pos, size_t n, const std::string& str);
+  std::string& replace(size_t pos, size_t n, const char* s);
+  std::string& replace(size_t pos, size_t n, size_t m, char c);
+  ```
+  替换子字符串。
+
+##### 9. 比较
+- **比较两个字符串是否相等**
+  ```cpp
+  bool operator==(const std::string& str) const;
+  ```
+  比较两个字符串是否相等。
+
+- **比较两个字符串**
+  ```cpp
+  int compare(const std::string& str) const;
+  int compare(size_t pos, size_t n, const std::string& str) const;
+  int compare(size_t pos, size_t n, const std::string& str, size_t pos2, size_t n2) const;
+  ```
+  比较两个字符串。
+
+##### 10. 转换
+- **返回 C 风格字符串**
+  ```cpp
+  const char* c_str() const;
+  ```
+  返回 C 风格字符串。
+
+- **返回字符串的内部数据**
+  ```cpp
+  const char* data() const;
+  ```
+  返回字符串的内部数据。
+
+##### 11. 迭代器
+- **返回迭代器**
+  ```cpp
+  iterator begin();
+  const_iterator begin() const;
+  iterator end();
+  const_iterator end() const;
+  ```
+  返回迭代器。
+
