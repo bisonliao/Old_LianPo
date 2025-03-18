@@ -122,6 +122,51 @@ stack特殊一点，没有后面三个，只有size()和empty()
   }
   ```
 
+set和map需要为key类型定义operator<函数，可以是全局函数，也可以是类成员函数，特别注意这个函数的原型：
+
+```c++
+bool operator<(const node_t &a ,const node_t &b) //全局函数
+{
+    if (a.m_x == b.m_x)
+    {
+        return a.m_y < b.m_y;
+    }
+    else
+    {
+        return a.m_x < b.m_x;
+    }
+};
+class PathListID
+{
+public:
+    int from_x;
+    int from_y;
+    int to_x;
+    int to_y;
+    PathListID()
+    {
+        this->from_x = this->from_y = this->to_x = this->to_y = 0;
+    };
+    PathListID(int fx, int fy, int tx, int ty)
+    {
+        this->from_x = fx;
+        this->from_y = fy;
+        this->to_x = tx;
+        this->to_y = ty;
+    };
+    bool operator<(const PathListID&a) const
+    {
+        if (this->from_x != a.from_x) return this->from_x < a.from_x;
+        if (this->from_y != a.from_y) return this->from_y < a.from_y;
+        if (this->to_x != a.to_x) return this->to_x < a.to_x;
+        return this->to_y < a.to_y;
+    };
+
+};
+```
+
+
+
 #### 7.  string
 
  `std::string` 的一些常用成员函数及其参数原型和简要说明：
@@ -344,4 +389,43 @@ std::string operator+(const std::string& lhs, const char* rhs);
   const_iterator end() const;
   ```
   返回迭代器。
+
+#### 8、排序函数std::sort
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>  /////////////这个头文件要记住
+#include <string>
+
+// 自定义结构体
+struct Person {
+    std::string name;
+    int age;
+
+    // 构造函数
+    Person(const std::string& n, int a) : name(n), age(a) {}
+
+};
+
+// 比较函数，记住它的原型，bool 函数名(const 类名 & a, const 类名&b)
+bool compareByAge(const Person& a, const Person& b) {
+    return a.age < b.age; // 升序排序
+}
+
+int main() {
+    // 创建一个 Person 对象的 vector
+    std::vector<Person> people = {
+        {"Alice", 30},
+        {"Bob", 25},
+        {"Charlie", 35}
+    };
+
+    // 使用 std::sort 和自定义比较函数
+    std::sort(people.begin(), people.end(), compareByAge);
+
+
+    return 0;
+}
+```
 
