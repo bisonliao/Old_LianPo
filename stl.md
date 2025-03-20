@@ -5,9 +5,10 @@
 - `m.size();`：返回当前元素个数。
 - `m.empty();`：检查是否为空。
 - `m.begin(), m.end();`：返回迭代器。 
+- `m.rbegin(), m.rend();`: 返回逆向迭代器，迭代器类型为`reverse_iterator`或者`const_reverse_iterator`，也是采用**自增方式移动**
 - `m.clear();`：清空所有元素。
 
-stack特殊一点，没有后面三个，只有size()和empty()
+stack特殊一点，没有后面五个，只有size()和empty()
 
 
 
