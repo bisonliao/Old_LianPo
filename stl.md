@@ -294,33 +294,8 @@ public:
   std::cout << s << std::endl; // 输出 "Hello World"
   ```
 
-##### 6. 字符串拼接
-- **拼接字符串**
-  ```cpp
-  std::string& operator+=(const std::string& str);
-  std::string& operator+=(const char* s);
-  std::string& operator+=(char c);
-  #全局拼接函数
-  std::string operator+(const std::string& lhs, const std::string& rhs);
-std::string operator+(const std::string& lhs, const char* rhs);
-  std::string operator+(const std::string& lhs, char rhs);
-  std::string operator+(char lhs, const std::string& rhs);
-  ```
-  拼接字符串。
-  
-  
-  
-- **通用拼接函数**
-  ```cpp
-  std::string& append(const char* s);
-  std::string& append(const char* s, size_t n);
-  std::string& append(const std::string& str);
-  std::string& append(const std::string& str, size_t pos, size_t n);
-  std::string& append(size_t n, char c);
-  ```
-  更通用的拼接函数。
-  
-  
+
+
 
 ##### 7. 子字符串操作
 - **获取子字符串**
