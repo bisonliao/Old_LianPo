@@ -351,7 +351,7 @@ public:
   std::string& replace(size_t pos, size_t n, const char* s);
   std::string& replace(size_t pos, size_t n, size_t m, char c);
   ```
-  替换子字符串。
+  替换子字符串。把字符串中从pos位置开始长度位n的这一段替换位str/s/m个c。
 
 ##### 9. 比较
 - **比较两个字符串是否相等**
@@ -363,10 +363,8 @@ public:
 - **比较两个字符串**
   ```cpp
   int compare(const std::string& str) const;
-  int compare(size_t pos, size_t n, const std::string& str) const;
-  int compare(size_t pos, size_t n, const std::string& str, size_t pos2, size_t n2) const;
   ```
-  比较两个字符串。
+  比较两个字符串。返回值：  <0表示比参数字符串小， ==0表示等于参数字符串， >0表示比参数字符串大
 
 ##### 10. 转换
 - **返回 C 风格字符串**
