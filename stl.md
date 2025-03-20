@@ -390,7 +390,19 @@ std::string operator+(const std::string& lhs, const char* rhs);
   ```
   返回迭代器。
 
-#### 8、排序函数std::sort
+#### 8、排序函数std::sort()
+
+std::sort()要求排序的容器提供随机访问迭代器，例如std::vector  std::deque 原生数组。
+
+std::sort()不能对std::list使用，因为list不提供随机访问能力。std::list本身有个成员函数叫sort，原型：
+
+```c++
+void std::list.sort();
+#list内元素提供这个函数即可：
+bool operator<(const T & a, const T &b);
+```
+
+std::sort()的使用示例：
 
 ```
 #include <iostream>
