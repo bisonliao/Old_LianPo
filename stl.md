@@ -300,13 +300,15 @@ public:
   std::string& operator+=(const std::string& str);
   std::string& operator+=(const char* s);
   std::string& operator+=(char c);
-  
+  #全局拼接函数
   std::string operator+(const std::string& lhs, const std::string& rhs);
 std::string operator+(const std::string& lhs, const char* rhs);
   std::string operator+(const std::string& lhs, char rhs);
   std::string operator+(char lhs, const std::string& rhs);
   ```
   拼接字符串。
+  
+  
   
 - **通用拼接函数**
   ```cpp
@@ -317,13 +319,15 @@ std::string operator+(const std::string& lhs, const char* rhs);
   std::string& append(size_t n, char c);
   ```
   更通用的拼接函数。
+  
+  
 
 ##### 7. 子字符串操作
 - **获取子字符串**
   ```cpp
   std::string substr(size_t pos = 0, size_t n = npos) const;
   ```
-  获取子字符串。pos：子字符串的起始位置（从0开始计数）；npos: 要提取的子字符串的长度。如果省略此参数，默认提取从起始位置到字符串末尾的所有字符。
+  获取子字符串。pos：子字符串的起始位置（从0开始计数）；n: 要提取的子字符串的长度。如果省略此参数，默认npos表示提取从起始位置到字符串末尾的所有字符。
 
 ##### 8. 查找和替换
 - **查找子字符串的位置**
