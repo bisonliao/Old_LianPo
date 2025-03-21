@@ -110,7 +110,7 @@ stack特殊一点，没有后面五个，只有size()和empty()
   - `map<int, string> m;`：创建一个空的`map`。
   - `m[key] = value;`：插入或更新键值对。
   - `m.erase(key);`：移除键值对。
-  - `m.find(key);`：查找键，返回迭代器。
+  - `m.find(key);`：查找键，返回**迭代器**。**迭代器变量名假设叫it，it->first是key，it->second是value。**
 - **常见使用方法**：
   ```cpp
   map<int, string> m = {{1, "one"}, {2, "two"}};
@@ -122,6 +122,8 @@ stack特殊一点，没有后面五个，只有size()和empty()
       cout << it->second << endl; // 输出 "one"
   }
   ```
+
+#### 7. operator<
 
 set和map需要为key类型定义operator<函数，可以是全局函数，也可以是类成员函数，特别注意这个函数的原型：
 
@@ -166,9 +168,31 @@ public:
 };
 ```
 
+#### 8. operator[]
+
+用户程序通过std::map/ vector / deque的operator[]来访问容器中的元素，如果指定的key不存在：
+
+- **`std::map`**：如果指定的键不存在，`operator[]` 会自动插入一个默认构造的值，并返回这个新插入的值的引用。
+- **`std::vector`**：如果指定的索引超出范围，`operator[]` 会导致未定义行为，通常会导致程序崩溃。
+- **`std::deque`**：如果指定的索引超出范围，`operator[]` 会导致未定义行为，通常会导致程序崩溃。
+
+为了避免未定义行为，建议在访问 `std::vector` 和 `std::deque` 的元素时，先检查索引是否在合法范围内。对于 `std::map`，如果不想自动插入新键值对，可以使用 `find` 方法来检查键是否存在。
+
+vector/deque我们有时候索引超出范围也没有崩溃，是因为底层分配的空间会比较富余。如果索引太大，还是会导致程序崩溃的。
+
+#### 9. pair
+
+这个模板类有时候挺有用的，用于快速把一对相关联的数据组合在一起。另外std::map在调用insert()的时候，可以传入一个pair，里面是一对key value。
+
+std::pair的使用，要包含头文件 
+
+```c++
+#include <utility>
+```
 
 
-#### 7.  string
+
+#### 10.  string
 
  `std::string` 的一些常用成员函数及其参数原型和简要说明：
 
@@ -232,9 +256,10 @@ public:
   char& operator[](size_t pos);
   const char& operator[](size_t pos) const;
   ```
-  访问指定位置的字符（可读写）。
+  访问指定位置的字符，**可读写，即可以 a[0] = '1'; 修改字符串指定位置的字符。**
 
 - **范围检查访问**
+  
   ```cpp
   char& at(size_t pos);
   const char& at(size_t pos) const;
@@ -243,12 +268,13 @@ public:
 
 ##### 4. 字符串大小和容量
 - **获取字符串长度**
+  
   ```cpp
   size_t size() const;
   size_t length() const;
   ```
-  返回字符串的长度。
-
+返回字符串的长度。
+  
 - **获取当前分配的容量**
   ```cpp
   size_t capacity() const;
@@ -387,18 +413,21 @@ public:
   const_iterator begin() const;
   iterator end();
   const_iterator end() const;
+  
+  reverse_iterator rbegin();
+  reverse_iterator rend();
   ```
   返回迭代器。
 
 #### 8、排序函数std::sort()
 
-std::sort()要求排序的容器提供随机访问迭代器，例如std::vector  std::deque 原生数组。
+std::sort()要求排序的容器提供随机访问迭代器，也就是支持 operator[]，例如std::vector  std::deque 原生数组。
 
 std::sort()不能对std::list使用，因为list不提供随机访问能力。std::list本身有个成员函数叫sort，原型：
 
 ```c++
 void std::list.sort();
-#list内元素提供这个函数即可：
+#为list内元素提供这个函数即可：
 bool operator<(const T & a, const T &b);
 ```
 
@@ -441,3 +470,127 @@ int main() {
 }
 ```
 
+### C语言二维数组类型的函数参数
+
+在C语言中，将二维数组作为函数参数时，有几种不同的方式可以声明函数和在函数体中使用该参数。以下是几种常见的方法：
+
+#### 1. 指定数组的行和列
+在函数声明中，可以指定二维数组的行和列的大小。这种方式在编译时需要知道数组的具体大小。
+
+```c
+#include <stdio.h>
+
+void printArray(int arr[3][4], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("arr[%d][%d] = %d\n", i, j, arr[i][j]);
+        }
+    }
+}
+
+int main() {
+    int arr[3][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}
+    };
+
+    printArray(arr, 3, 4);
+
+    return 0;
+}
+```
+
+#### 2. 指定数组的列，省略行
+在函数声明中，可以省略行的大小，但必须指定列的大小。这种方式在编译时只需要知道数组的列大小。
+
+```c
+#include <stdio.h>
+
+void printArray(int arr[][4], int rows) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("arr[%d][%d] = %d\n", i, j, arr[i][j]);
+        }
+    }
+}
+
+int main() {
+    int arr[3][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}
+    };
+
+    printArray(arr, 3);
+
+    return 0;
+}
+```
+
+#### 3. 使用指针表示二维数组
+可以使用指针来表示二维数组。这种方式更加灵活，可以在函数中动态处理不同大小的数组。
+
+```c
+#include <stdio.h>
+
+void printArray(int *arr, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("arr[%d][%d] = %d\n", i, j, *(arr + i * cols + j));
+        }
+    }
+}
+
+int main() {
+    int arr[3][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}
+    };
+
+    printArray(&arr[0][0], 3, 4);
+
+    return 0;
+}
+```
+
+#### 4. 使用指针的指针表示二维数组
+如果二维数组的行数和列数都不固定，可以使用指针的指针来表示二维数组。这种方式需要在调用函数时传递一个指针数组，每个指针指向一行。
+
+```c
+#include <stdio.h>
+
+void printArray(int **arr, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("arr[%d][%d] = %d\n", i, j, arr[i][j]);
+        }
+    }
+}
+
+int main() {
+    int arr[3][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}
+    };
+
+    int *ptr[3];
+    for (int i = 0; i < 3; i++) {
+        ptr[i] = arr[i];
+    }
+
+    printArray(ptr, 3, 4);
+
+    return 0;
+}
+```
+
+#### 5. 总结
+- **指定数组的行和列**：适用于数组大小固定的情况。
+- **指定数组的列，省略行**：适用于数组行数可变但列数固定的情况。
+- **使用指针表示二维数组**：适用于数组大小完全动态的情况，但需要手动计算偏移。
+- **使用指针的指针表示二维数组**：适用于行数和列数都不固定的情况，但需要额外的指针数组来管理行。
+
+选择哪种方式取决于你的具体需求和数组的大小是否固定。
