@@ -594,3 +594,145 @@ int main() {
 - **使用指针的指针表示二维数组**：适用于行数和列数都不固定的情况，但需要额外的指针数组来管理行。
 
 选择哪种方式取决于你的具体需求和数组的大小是否固定。
+
+### C语言中的随机数
+
+在C语言中，随机数生成主要通过标准库 `<stdlib.h>` 和 `<time.h>` 来实现。以下是一些关键的常用函数，以及它们的使用方法。这些函数对于生成随机数非常重要，建议你记住它们的用法。
+
+#### 1. `srand()`
+**用途**：设置随机数生成器的种子。
+**原型**：
+```c
+void srand(unsigned int seed);
+```
+**参数**：
+- `seed`：一个无符号整数，作为随机数生成器的种子。
+
+**说明**：
+
+- 每次调用 `srand()` 时，都会重新初始化随机数生成器。
+- 如果不调用 `srand()`，随机数生成器会使用默认种子（通常是1），导致每次运行程序时生成的随机数序列相同。
+- 通常使用当前时间作为种子，以确保每次运行程序时生成的随机数序列不同。
+
+**示例**：
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL)); // 使用当前时间作为种子
+    return 0;
+}
+```
+
+#### 2. `rand()`
+**用途**：生成一个伪随机数。
+**原型**：
+```c
+int rand(void);
+```
+**返回值**：
+- 返回一个介于 0 和 `RAND_MAX` 之间的伪随机整数。`RAND_MAX` 是一个常量，通常为 32767。
+
+**说明**：
+- 在调用 `rand()` 之前，通常需要先调用 `srand()` 设置种子。
+- 如果不设置种子，`rand()` 会使用默认种子，导致每次运行程序时生成的随机数序列相同。
+
+**示例**：
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL)); // 使用当前时间作为种子
+    int random_number = rand(); // 生成一个随机数
+    printf("Random number: %d\n", random_number);
+    return 0;
+}
+```
+
+#### 3. 生成指定范围的随机数
+**用途**：生成一个指定范围内的随机数。
+**方法**：
+```c
+int random_number = rand() % (upper - lower + 1) + lower;
+```
+**说明**：
+- `rand() % (upper - lower + 1)` 生成一个介于 0 和 `upper - lower` 之间的随机数。
+- 加上 `lower`，将范围调整到 `[lower, upper]`。
+
+**示例**：
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL)); // 使用当前时间作为种子
+    int lower = 10, upper = 20;
+    int random_number = rand() % (upper - lower + 1) + lower;
+    printf("Random number between %d and %d: %d\n", lower, upper, random_number);
+    return 0;
+}
+```
+
+#### 4. 生成浮点数随机数
+**用途**：生成一个介于 0 和 1 之间的随机浮点数。
+**方法**：
+```c
+double random_double = (double)rand() / RAND_MAX;
+```
+**说明**：
+- `(double)rand()` 将 `rand()` 的返回值转换为双精度浮点数。
+- 除以 `RAND_MAX`，将范围缩放到 `[0, 1)`。
+
+**示例**：
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL)); // 使用当前时间作为种子
+    double random_double = (double)rand() / RAND_MAX;
+    printf("Random double between 0 and 1: %f\n", random_double);
+    return 0;
+}
+```
+
+#### 5. 生成指定范围的浮点数随机数
+**用途**：生成一个指定范围内的随机浮点数。
+**方法**：
+```c
+double random_double = (double)rand() / RAND_MAX * (upper - lower) + lower;
+```
+**说明**：
+- `(double)rand() / RAND_MAX` 生成一个介于 0 和 1 之间的随机浮点数。
+- 乘以 `(upper - lower)`，将范围缩放到 `[0, upper - lower)`。
+- 加上 `lower`，将范围调整到 `[lower, upper)`。
+
+**示例**：
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL)); // 使用当前时间作为种子
+    double lower = 10.0, upper = 20.0;
+    double random_double = (double)rand() / RAND_MAX * (upper - lower) + lower;
+    printf("Random double between %.2f and %.2f: %.2f\n", lower, upper, random_double);
+    return 0;
+}
+```
+
+#### 6. 总结
+- **`srand(unsigned int seed)`**：设置随机数生成器的种子。
+- **`rand()`**：生成一个介于 0 和 `RAND_MAX` 之间的伪随机整数。
+- **生成指定范围的随机整数**：`rand() % (upper - lower + 1) + lower`。
+- **生成介于 0 和 1 之间的随机浮点数**：`(double)rand() / RAND_MAX`。
+- **生成指定范围的随机浮点数**：`(double)rand() / RAND_MAX * (upper - lower) + lower`。
+
+这些函数和方法是C语言中生成随机数的基础，建议你记住它们的用法，以便在考试中能够熟练使用。
